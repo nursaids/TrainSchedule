@@ -17,9 +17,11 @@ var config = {
     projectId: "traintracker-4cbbc",
     storageBucket: "traintracker-4cbbc.appspot.com",
     messagingSenderId: "738896203797"
-};
+  };
+  firebase.initializeApp(config);
+  
 
-firebase.initializeApp(config);
+
 
 var database = firebase.database();
 
@@ -30,14 +32,14 @@ $("#add-train-btn").on("click", function (event) {
 
     // Grabs user input
     var trainName = $("#train-name-input").val().trim();
-    var trainDestanation = $("#destanation-input").val().trim();
-    var trainStart = moment($("#first-train-time").val().trim(), "HH:mm").format("X");
+    var trainDestination = $("#destination-input").val().trim();
+    var trainStart = moment($("#first-train-time-input").val().trim(), "HH:mm").format("X");
     var trainFriq = $("#friquency-input").val().trim();
 
     // Creates local object for holding train data
-    var NewTrain = {
+    var newTrain = {
         name: trainName,
-        destanation: trainDestanation,
+        destination: trainDestination,
         start: trainStart,
         friquency: trainFriq
 
@@ -49,7 +51,7 @@ $("#add-train-btn").on("click", function (event) {
 
     // logs everything to console
     console.log(newTrain.name);
-    console.log(neTrain.destanation);
+    console.log(newTrain.destination);
     console.log(newTrain.start);
     console.log(newTrain.friquency);
     
@@ -58,7 +60,7 @@ $("#add-train-btn").on("click", function (event) {
     // Clears all of the text-boxes
 
     $("#train-name-input").val("");
-    $("#destanation-input").val("");
+    $("#destination-input").val("");
     $("#first-train-time-input").val("");
     $("#friquency-input").val("");
 
@@ -73,13 +75,13 @@ database.ref().on("child_added", function (childSnapshot){
     // Store into a variable
 
     var trainName = childSnapshot.val().name;
-    var trainDestanation = childSnapshot.val().destanation;
+    var trainDestination = childSnapshot.val().destination;
     var trainStart = childSnapshot.val().start;
     var trainFriq = childSnapshot.val().friquency;
 
     // Train Info
     console.log(trainName);
-    console.log(trainDestanation);
+    console.log(trainDestination);
     console.log(trainStart)
     console.log(trainFriq);
    
@@ -87,5 +89,22 @@ database.ref().on("child_added", function (childSnapshot){
     var trainStartPretty = moment.unix(trainStart).format("HH:mm");
     
     // Calculate
+
+    var minutesAway = moment().diff(moment(trainStartPretty, "X"), "minutes");
+  console.log(minutesAway);
+
+
+    // Create the new row
+    var newRow = $("#here").append(
+    $("<td>").text(trainName),
+    $("<td>").text(trainDestination),
+    $("<td>").text(trainFriq),
+    $("<td>").text(trainStartPretty),
+    $("<td>").text(minutesAway),
+    
+  );
+
+  // Append the new row to the table
+  $("#employee-table > tbody").append(newRow);
 
 })
